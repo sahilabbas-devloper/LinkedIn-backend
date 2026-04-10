@@ -13,7 +13,7 @@ import router from "./Route/notificationroute.js"
 const app = express()
 app.use(cors(
     {
-        origin: ["http://localhost:5173","https://linked-frontend.vercel.app/"],
+        origin: ["http://localhost:5173","https://linked-frontend.vercel.app"],
         methods: ["POST", "GET", "PUT", "DELETE"],
         credentials: true,
         allowedHeaders: ["Content-Type", "authorization"]
