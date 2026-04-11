@@ -1,4 +1,4 @@
-import fs from "fs"
+
 import post from "../Model/Postmodel.js"
 import cloudinary from "../utils/cloudinary.js"
 
@@ -14,16 +14,18 @@ const create = async (req, res) => {
         }
 
 
-        const filepath = req.file.path
-
-
         // cloudinary upload ..
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: "posts"
+        const result = await new Promise((resolve , reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+                {folder: "posts"},
+                (error,result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            )
+            stream.end(req.file.buffer);
         })
-
-        // temp file deleted ..
-        await fs.promises.unlink(filepath)
+     
 
         // creating a post ..
         const yourpost = await post.create({
@@ -35,9 +37,6 @@ const create = async (req, res) => {
         res.status(201).json({ message: "post created sucessfully." })
 
     } catch (error) {
-
-        await fs.promises.unlink(req.file.path).catch(() =>{})
-        console.log(error)
 
         res.status(500).json({ message: "enternal error !" })
     }
